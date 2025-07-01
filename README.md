@@ -1,45 +1,49 @@
 # RabbitCommiter
 
-RabbitCommiter is a command-line tool that allows you to generate multiple empty Git commits on a specific date. This can be useful for backfilling commit history, testing, or maintaining contribution streaks. The tool is interactive and supports both Windows and Unix-like systems.
+RabbitCommiter is a command-line tool to generate multiple empty commits in a Git repository, distributed randomly between two dates. Useful for backfilling history, testing CI/CD flows, or maintaining contribution streaks. The script is fully interactive and supports Windows, Linux, and MacOS.
 
 ## Features
-- Generate up to 100 empty commits for a specified date
+- Generate up to **1000** empty commits between two chosen dates
 - Cross-platform support (Windows, Linux, MacOS)
-- Randomized commit messages for each commit
-- Interactive prompts for user-friendly operation
-- Option to push commits to the remote repository after creation
+- Random commit messages for each commit
+- Fully interactive operation (dates, amount, OS, push)
+- Option to automatically push to the remote repository
+- Only works on `main` or `master` branches
 
 ## Requirements
 - Python 3.6+
-- Git must be installed and available in your system's PATH
-- An existing Git repository (run inside a Git project directory)
+- Git installed and available in your system's PATH
+- An initialized Git repository (run from the project root)
 
-## Usage
+## How to use
 1. **Clone or download this repository.**
-2. **Navigate to the project directory in your terminal.**
+2. **Open the terminal in the project folder.**
 3. **Run the script:**
    ```bash
    python main.py
    ```
 4. **Follow the interactive prompts:**
    - Confirm your operating system
-   - Enter the commit date in `DD:MM:YYYY` format (e.g., 02:04:2024)
-   - Enter the number of empty commits to generate (0-100)
-   - Optionally, push the commits to your remote repository
+   - Enter the start and end dates in `DD:MM:YYYY` format (e.g., 02:04:2024)
+   - Enter the number of empty commits to generate (0-1000)
+   - Choose whether to push to the remote repository
 
 ## Example
 ```
 $ python main.py
 
-📅 Commit date (DD:MM:YYYY): 15:05:2024
-🔢 Number of commits (0-100): 10
+🔍 Detected OS: Windows
+💻 Is this correct? (Y/n): y
+📅 Start date (DD:MM:YYYY): 01:05:2024
+📅 End date (DD:MM:YYYY): 10:05:2024
+🔢 Number of commits (0-1000): 20
 🚀 Do you want to push to remote repository? (Y/n): y
 ```
 
 ## Notes
 - The script must be run from the root of a Git repository.
 - Only works on the `main` or `master` branch.
-- Commits are created with incremented timestamps (by minutes).
-- If you encounter permission or environment issues, ensure Git is properly installed and accessible.
+- Commit dates are distributed randomly within the informed interval.
+- If you encounter permission or environment errors, make sure Git is installed and accessible.
 
-made by [hax](https://github.com/emptyhax) & [dan](https://github.com/Dansvn)
+Made by [hax](https://github.com/emptyhax) & [dan](https://github.com/Dansvn)
