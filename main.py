@@ -2,7 +2,7 @@ import os
 import subprocess
 from datetime import datetime, timedelta
 import random
-import platform 
+import platform
 
 RABBIT_COMMITER_ART = r"""
                 ████        ████    
@@ -91,31 +91,53 @@ def detect_os():
         else:
             print("\033[91m❌ Please answer with Y or N.\033[0m")
 
-def make_empty_commits(date_str, commit_count, os_type):
+def random_dates_between(start, end, count):
+    total_seconds = int((end - start).total_seconds())
+    if total_seconds < count:
+        raise ValueError(
+            f"Intervalo de {total_seconds} segundos insuficiente para gerar {count} datas únicas."
+        )
+    random_seconds = sorted(random.sample(range(total_seconds), count))
+    return [start + timedelta(seconds=sec) for sec in random_seconds]
+
+
+def make_empty_commits(date_start_str, date_end_str, commit_count, os_type):
     current_branch = get_current_branch()
     if current_branch not in ["main", "master"]:
         print(f"\033[91m❌ You're on branch '{current_branch}'. Please switch to 'main' or 'master'.\033[0m")
         return
 
-    if not validate_date(date_str):
+    if not validate_date(date_start_str) or not validate_date(date_end_str):
         print(f"\033[91m❌ Invalid date! Use DD:MM:YYYY format (ex: 02:04:2024).\033[0m")
         return
 
-    day, month, year = map(int, date_str.split(":"))
-    commit_date = datetime(year=year, month=month, day=day)
+    day_s, month_s, year_s = map(int, date_start_str.split(":"))
+    day_e, month_e, year_e = map(int, date_end_str.split(":"))
+    date_start = datetime(year=year_s, month=month_s, day=day_s)
+    date_end = datetime(year=year_e, month=month_e, day=day_e)
 
-    if commit_count < 0 or commit_count > 100:
-        print(f"\033[91m❌ Commit count must be between 0-100.\033[0m")
+    if date_start > date_end:
+        print(f"\033[91m❌ Start date must be earlier than end date.\033[0m")
+        return
+
+    if commit_count < 0 or commit_count > 1000:
+        print(f"\033[91m❌ Commit count must be between 0-1000.\033[0m")
         return
 
     if not os.path.exists(".git"):
         print(f"\033[91m❌ This directory is not a Git repository.\033[0m")
         return
 
-    print(f"\n\033[96m⏳ Generating {commit_count} empty commits on branch '{current_branch}' (date: {date_str})...\033[0m")
+    print(f"\n\033[96m⏳ Generating {commit_count} empty commits on branch '{current_branch}' from {date_start_str} to {date_end_str}...\033[0m")
+
+    try:
+        random_commit_dates = random_dates_between(date_start, date_end, commit_count)
+    except ValueError as e:
+        print(f"\033[91m❌ {e}\033[0m")
+        return
 
     for i in range(commit_count):
-        adjusted_date = commit_date + timedelta(minutes=i)
+        adjusted_date = random_commit_dates[i]
         date_git_format = adjusted_date.strftime("%Y-%m-%d %H:%M:%S")
         message = generate_random_commit_message()
         
@@ -156,7 +178,7 @@ def make_empty_commits(date_str, commit_count, os_type):
             print("\033[92m✅ Successfully pushed to remote!\033[0m")
         except subprocess.CalledProcessError as e:
             print(f"\033[91m❌ Error pushing to remote: {e}\033[0m")
-            print("\033[93m⚠️ You may need to push manually with: git push origin {current_branch}\033[0m")
+            print(f"\033[93m⚠️ You may need to push manually with: git push origin {current_branch}\033[0m")
 
 def main():
     show_banner()
@@ -165,21 +187,26 @@ def main():
     print(f"\n\033[97m🖥️  Using {os_type.capitalize()} mode\033[0m")
 
     while True:
-        date_input = input("\n\033[97m📅 Commit date (DD:MM:YYYY): \033[0m").strip()
-        if not validate_date(date_input):
+        date_start_input = input("\n\033[97m📅 Start date (DD:MM:YYYY): \033[0m").strip()
+        if not validate_date(date_start_input):
+            print("\033[91m❌ Invalid format! Use DD:MM:YYYY (ex: 02:04:2024).\033[0m")
+            continue
+        
+        date_end_input = input("\033[97m📅 End date (DD:MM:YYYY): \033[0m").strip()
+        if not validate_date(date_end_input):
             print("\033[91m❌ Invalid format! Use DD:MM:YYYY (ex: 02:04:2024).\033[0m")
             continue
 
         try:
-            commit_count = int(input("\033[97m🔢 Number of commits (0-100): \033[0m").strip())
-            if commit_count < 0 or commit_count > 100:
-                print("\033[91m❌ Number must be between 0-100.\033[0m")
+            commit_count = int(input("\033[97m🔢 Number of commits (0-1000): \033[0m").strip())
+            if commit_count < 0 or commit_count > 1000:
+                print("\033[91m❌ Number must be between 0-1000.\033[0m")
                 continue
             break
         except ValueError:
             print("\033[91m❌ Please enter a valid number.\033[0m")
 
-    make_empty_commits(date_input, commit_count, os_type)
+    make_empty_commits(date_start_input, date_end_input, commit_count, os_type)
 
 if __name__ == "__main__":
     main()
