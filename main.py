@@ -2,7 +2,7 @@ import os
 import subprocess
 from datetime import datetime, timedelta
 import random
-import platform
+import platform 
 
 RABBIT_COMMITER_ART = r"""
                 ████        ████    
