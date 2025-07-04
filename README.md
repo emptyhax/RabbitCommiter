@@ -74,4 +74,4 @@ Commit messages are randomly chosen from options like:
 
 ---
 
-Made by [hax](https://github.com/emptyhax) & [dan](https://github.com/Dansvn)
+Made by [hax](https://github.com/6hax) & [dan](https://github.com/Dansvn)
